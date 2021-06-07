@@ -37,26 +37,24 @@ function TodoList() {
         all_tasks: function () {
             return tasks.values();
         },
-        print_all: function () {
-            for (var v of tasks) {
-                console.log(v);
-            }
-        }
     }
 }
 var todoList = new TodoList();
 
-function add() {
+function add(event) {
+    event.preventDefault()
     var description = document.getElementById('task').value;
 
-    todoList.add_task({'description': description, 'completed': false});
-    showTaskList();
+    if (description) {
+      todoList.add_task({'description': description, 'completed': false});
+      document.getElementById('task').value = ''
+      showTaskList();
+    }
     return true;
 }
 
 function changeLabel() {
-    var id = this.getAttribute('id'),
-        description = $('label[id="' + id + '"]').val();
+    var id = this.getAttribute('id');
 
     $('label[id="' + id + '"]').hide();
     $('.edit-input[id="' + id + '"]').show().focus();
@@ -65,9 +63,9 @@ function changeLabel() {
 
 function labelChanged() {
     var id = this.getAttribute('id'),
+        prevDesc = $('label[id="' + id + '"]')[0].innerText,
         description = $('.edit-input[id=' + id + ']').val();
-
-    todoList.edit_task(id, description);
+    todoList.edit_task(id, description || prevDesc);
     showTaskList();
     return false;
 }
@@ -138,7 +136,7 @@ function calculateCounter() {
         $inputs = $("input[type=checkbox]"),
         $inputsCh = $inputs.filter(':checked'),
         tempArray = [$inputsCh.length, $inputs.length],
-        informationText = tempArray[0]-tempArray[1];
+        informationText = tempArray[1]-tempArray[0];
     $counter.html(informationText);
 }
 
@@ -159,12 +157,11 @@ function filterByActive() {
     var $inputs = $("div input[type=checkbox]"),
         $inputsCh = $inputs.filter(":checked"),
         $inputsNotCh = $inputs.filter(":not(:checked)"),
-        $parentInputs = $inputsCh.parent();
+        $parentInputs = $inputsCh.parent().parent();
     $('#activeFilter').addClass("active");
     $('#allFilter').removeClass("active");
     $('#completedFilter').removeClass("active");
     return ($parentInputs.hide(), $inputsNotCh.parents().show());
-    showTaskList();
 }
 document.querySelector("#activeFilter").addEventListener('click', filterByActive, false);
 
@@ -173,12 +170,11 @@ function filterByCompleted() {
     var $inputs = $("div input[type=checkbox]"),
         $inputsCh = $inputs.filter(":checked"),
         $inputsNotCh = $inputs.filter(":not(:checked)"),
-        $parentInputs = $inputsNotCh.parent();
+        $parentInputs = $inputsNotCh.parent().parent();
     $('#completedFilter').addClass("active");
     $('#allFilter').removeClass("active");
     $('#activeFilter').removeClass("active");
     return ($parentInputs.hide(), $inputsCh.parents().show());
-    showTaskList();
 }
 document.querySelector("#completedFilter").addEventListener('click', filterByCompleted, false);
 

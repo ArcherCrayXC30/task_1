@@ -109,6 +109,9 @@ img.deselect-all {
 #selectAll, #deselectAll {
     cursor: pointer;
 }
+.select-button-text {
+  text-align: center; 
+}
 .deselect-all {
     margin-left: 10px;   
 }
